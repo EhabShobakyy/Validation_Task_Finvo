@@ -1,3 +1,4 @@
+// Row component
 import * as React from "react";
 import IconButton from "@mui/material/IconButton";
 import TableCell from "@mui/material/TableCell";
@@ -8,6 +9,9 @@ import Collapse from "@mui/material/Collapse";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
+// Import Add and Remove icons from Material-UI
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 
 function Row(props) {
   const { row } = props;
@@ -38,21 +42,22 @@ function Row(props) {
   };
 
   const isLastLayer = (layer) => {
-    // Check if the layer is the last layer (account_names property)
-    return layer === "account_names";
+    return layer === "description";
   };
 
   return (
     <React.Fragment>
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
         <TableCell>
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={handleToggle}
-          >
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
+          {!isLastLayer(row.parent.layer) && (
+            <IconButton
+              aria-label="expand row"
+              size="small"
+              onClick={handleToggle}
+            >
+              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            </IconButton>
+          )}
         </TableCell>
         <TableCell component="th" scope="row">
           {row.name}
@@ -109,9 +114,7 @@ function Row(props) {
                                         (account, accountIndex) => (
                                           <TableRow key={accountIndex}>
                                             <TableCell>
-                                              {!isLastLayer(
-                                                "account_names"
-                                              ) && (
+                                              {!isLastLayer(account) && (
                                                 <IconButton
                                                   aria-label="expand row"
                                                   size="small"
@@ -147,10 +150,6 @@ function Row(props) {
                                             >
                                               {account.amount}
                                             </TableCell>
-                                            <TableCell
-                                              component="th"
-                                              scope="row"
-                                            ></TableCell>
                                           </TableRow>
                                         )
                                       )}

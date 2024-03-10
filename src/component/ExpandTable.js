@@ -26,7 +26,7 @@ export default function CollapsibleTable() {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "http://54.85.104.19:8000/reporting/expense_report/?from=1/1/2022&to=5/4/2022&filter_by=month"
+          `http://54.85.104.19:8000/reporting/expense_report/?from=2/1/2022&to=5/4/2022&filter_by=month`
         );
         setApiData(response.data);
       } catch (error) {
@@ -62,7 +62,6 @@ export default function CollapsibleTable() {
     setTransformedArray(transformedArray);
   }, [apiData]);
 
-  console.log("parent", transformedArray);
   return (
     <TableContainer component={Paper}>
       <Table aria-label="collapsible table">
@@ -70,13 +69,14 @@ export default function CollapsibleTable() {
           <TableRow>
             <TableCell />
             <TableCell>Row Labels</TableCell>
+            <TableCell></TableCell>
             <TableCell align="right">Grand Total</TableCell>
           </TableRow>
         </TableHead>
 
         <TableBody>
           {transformedArray.map((row) => (
-            <Row key={row.id} row={row} />
+            <Row key={row.id} row={row} totalAmount={row.parent.total_amount} />
           ))}
         </TableBody>
       </Table>
