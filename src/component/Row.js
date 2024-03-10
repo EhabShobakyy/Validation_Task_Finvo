@@ -9,15 +9,12 @@ import Collapse from "@mui/material/Collapse";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
-// Import Add and Remove icons from Material-UI
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
 
 function Row(props) {
   const { row } = props;
-  console.log("row", row);
   const [open, setOpen] = React.useState(false);
   const [childOpen, setChildOpen] = React.useState([]);
+  const [accountCentersOpen, setAccountCentersOpen] = React.useState([]);
   const [accountNamesOpen, setAccountNamesOpen] = React.useState([]);
 
   const handleToggle = () => {
@@ -29,35 +26,43 @@ function Row(props) {
     newChildOpen[index] = !newChildOpen[index];
     setChildOpen(newChildOpen);
 
-    // Reset accountNamesOpen for the clicked child row
+    // Reset accountCentersOpen and accountNamesOpen for the clicked child row
+    setAccountCentersOpen([]);
     setAccountNamesOpen([]);
   };
 
-  const handleAccountNamesToggle = (childIndex, accountIndex) => {
-    const newAccountNamesOpen = [...accountNamesOpen];
-    newAccountNamesOpen[childIndex] = newAccountNamesOpen[childIndex] || [];
-    newAccountNamesOpen[childIndex][accountIndex] =
-      !newAccountNamesOpen[childIndex][accountIndex];
-    setAccountNamesOpen(newAccountNamesOpen);
+  const handleAccountCentersToggle = (childIndex, centerIndex) => {
+    const newAccountCentersOpen = [...accountCentersOpen];
+    newAccountCentersOpen[childIndex] = newAccountCentersOpen[childIndex] || [];
+    newAccountCentersOpen[childIndex][centerIndex] =
+      !newAccountCentersOpen[childIndex][centerIndex];
+    setAccountCentersOpen(newAccountCentersOpen);
+
+    // Reset accountNamesOpen for the clicked cost center row
+    setAccountNamesOpen([]);
   };
 
-  const isLastLayer = (layer) => {
-    return layer === "description";
+  const handleAccountNamesToggle = (childIndex, centerIndex, accountIndex) => {
+    const newAccountNamesOpen = [...accountNamesOpen];
+    newAccountNamesOpen[childIndex] = newAccountNamesOpen[childIndex] || [];
+    newAccountNamesOpen[childIndex][centerIndex] =
+      newAccountNamesOpen[childIndex][centerIndex] || [];
+    newAccountNamesOpen[childIndex][centerIndex][accountIndex] =
+      !newAccountNamesOpen[childIndex][centerIndex][accountIndex];
+    setAccountNamesOpen(newAccountNamesOpen);
   };
 
   return (
     <React.Fragment>
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
         <TableCell>
-          {!isLastLayer(row.parent.layer) && (
-            <IconButton
-              aria-label="expand row"
-              size="small"
-              onClick={handleToggle}
-            >
-              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-            </IconButton>
-          )}
+          <IconButton
+            aria-label="expand row"
+            size="small"
+            onClick={handleToggle}
+          >
+            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">
           {row.name}
@@ -71,23 +76,21 @@ function Row(props) {
               <Table size="small" aria-label="purchases">
                 <TableBody>
                   {Object.keys(row.parent.cost_centers).map(
-                    (centerKey, index) => (
+                    (centerKey, centerIndex) => (
                       <>
                         <TableRow key={centerKey}>
                           <TableCell>
-                            {!isLastLayer(centerKey) && (
-                              <IconButton
-                                aria-label="expand row"
-                                size="small"
-                                onClick={() => handleChildToggle(index)}
-                              >
-                                {childOpen[index] ? (
-                                  <KeyboardArrowUpIcon />
-                                ) : (
-                                  <KeyboardArrowDownIcon />
-                                )}
-                              </IconButton>
-                            )}
+                            <IconButton
+                              aria-label="expand row"
+                              size="small"
+                              onClick={() => handleChildToggle(centerIndex)}
+                            >
+                              {childOpen[centerIndex] ? (
+                                <KeyboardArrowUpIcon />
+                              ) : (
+                                <KeyboardArrowDownIcon />
+                              )}
+                            </IconButton>
                           </TableCell>
                           <TableCell component="th" scope="row">
                             {centerKey}
@@ -99,7 +102,7 @@ function Row(props) {
                         <TableRow>
                           <TableCell colSpan={3}>
                             <Collapse
-                              in={childOpen[index]}
+                              in={childOpen[centerIndex]}
                               timeout="auto"
                               unmountOnExit
                             >
@@ -108,51 +111,144 @@ function Row(props) {
                                   <TableBody>
                                     {row.parent.cost_centers[centerKey]
                                       .account_names &&
-                                      row.parent.cost_centers[
-                                        centerKey
-                                      ].account_names["account 1"].map(
-                                        (account, accountIndex) => (
-                                          <TableRow key={accountIndex}>
+                                      Object.keys(
+                                        row.parent.cost_centers[centerKey]
+                                          .account_names
+                                      ).map((accountKey, accountIndex) => (
+                                        <>
+                                          <TableRow key={accountKey}>
                                             <TableCell>
-                                              {!isLastLayer(account) && (
-                                                <IconButton
-                                                  aria-label="expand row"
-                                                  size="small"
-                                                  onClick={() =>
-                                                    handleAccountNamesToggle(
-                                                      index,
-                                                      accountIndex
-                                                    )
-                                                  }
-                                                >
-                                                  {accountNamesOpen[index] &&
-                                                  accountNamesOpen[index][
+                                              <IconButton
+                                                aria-label="expand row"
+                                                size="small"
+                                                onClick={() =>
+                                                  handleAccountCentersToggle(
+                                                    centerIndex,
                                                     accountIndex
-                                                  ] ? (
-                                                    <KeyboardArrowUpIcon />
-                                                  ) : (
-                                                    <KeyboardArrowDownIcon />
-                                                  )}
-                                                </IconButton>
-                                              )}
+                                                  )
+                                                }
+                                              >
+                                                {accountCentersOpen[
+                                                  centerIndex
+                                                ] &&
+                                                accountCentersOpen[centerIndex][
+                                                  accountIndex
+                                                ] ? (
+                                                  <KeyboardArrowUpIcon />
+                                                ) : (
+                                                  <KeyboardArrowDownIcon />
+                                                )}
+                                              </IconButton>
                                             </TableCell>
                                             <TableCell
                                               component="th"
                                               scope="row"
                                             >
-                                              {account.description !== null
-                                                ? account.description
-                                                : "-"}
+                                              {accountKey}
                                             </TableCell>
                                             <TableCell
                                               component="th"
                                               scope="row"
                                             >
-                                              {account.amount}
+                                              {
+                                                row.parent.cost_centers[
+                                                  centerKey
+                                                ].account_names[accountKey][0]
+                                                  .amount
+                                              }
                                             </TableCell>
                                           </TableRow>
-                                        )
-                                      )}
+                                          <TableRow>
+                                            <TableCell colSpan={3}>
+                                              <Collapse
+                                                in={
+                                                  accountCentersOpen[
+                                                    centerIndex
+                                                  ] &&
+                                                  accountCentersOpen[
+                                                    centerIndex
+                                                  ][accountIndex]
+                                                }
+                                                timeout="auto"
+                                                unmountOnExit
+                                              >
+                                                <Box sx={{ margin: 1 }}>
+                                                  <Table
+                                                    size="small"
+                                                    aria-label="purchases"
+                                                  >
+                                                    <TableBody>
+                                                      {row.parent.cost_centers[
+                                                        centerKey
+                                                      ].account_names[
+                                                        accountKey
+                                                      ].map(
+                                                        (
+                                                          account,
+                                                          nestedAccountIndex
+                                                        ) => (
+                                                          <TableRow
+                                                            key={
+                                                              nestedAccountIndex
+                                                            }
+                                                          >
+                                                            <TableCell>
+                                                              <IconButton
+                                                                aria-label="expand row"
+                                                                size="small"
+                                                                onClick={() =>
+                                                                  handleAccountNamesToggle(
+                                                                    centerIndex,
+                                                                    accountIndex,
+                                                                    nestedAccountIndex
+                                                                  )
+                                                                }
+                                                              >
+                                                                {accountNamesOpen[
+                                                                  centerIndex
+                                                                ] &&
+                                                                accountNamesOpen[
+                                                                  centerIndex
+                                                                ][
+                                                                  accountIndex
+                                                                ] &&
+                                                                accountNamesOpen[
+                                                                  centerIndex
+                                                                ][accountIndex][
+                                                                  nestedAccountIndex
+                                                                ] ? (
+                                                                  <KeyboardArrowUpIcon />
+                                                                ) : (
+                                                                  <KeyboardArrowDownIcon />
+                                                                )}
+                                                              </IconButton>
+                                                            </TableCell>
+                                                            <TableCell
+                                                              component="th"
+                                                              scope="row"
+                                                            >
+                                                              {account.description !==
+                                                              null
+                                                                ? account.description
+                                                                : "-"}
+                                                            </TableCell>
+                                                            <TableCell
+                                                              component="th"
+                                                              scope="row"
+                                                            >
+                                                              {account.amount}
+                                                            </TableCell>
+                                                          </TableRow>
+                                                        )
+                                                      )}
+                                                    </TableBody>
+                                                  </Table>
+                                                </Box>
+                                              </Collapse>
+                                            </TableCell>
+                                          </TableRow>
+                                        </>
+                                      ))}
                                   </TableBody>
                                 </Table>
                               </Box>
