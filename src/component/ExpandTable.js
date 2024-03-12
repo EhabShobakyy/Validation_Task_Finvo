@@ -79,8 +79,10 @@ export default function CollapsibleTable() {
       <Table aria-label="collapsible table">
         <TableHead sx={{ background: "#d9e1f2" }}>
           <TableRow>
-            <TableCell sx={{ fontWeight: 600 }}>Row Labels</TableCell>
-            <TableCell sx={{ fontWeight: 600 }} align="right">
+            <TableCell sx={{ fontWeight: "bold", fontSize: 18 }}>
+              Row Labels
+            </TableCell>
+            <TableCell sx={{ fontWeight: "bold", fontSize: 18 }} align="right">
               Grand Total
             </TableCell>
           </TableRow>
@@ -92,10 +94,17 @@ export default function CollapsibleTable() {
           ))}
 
           <TableRow sx={{ background: "#d9e1f2" }}>
-            <TableCell sx={{ fontWeight: 600 }} component="th" scope="row">
+            <TableCell
+              sx={{ fontWeight: "bold", fontSize: 18 }}
+              component="th"
+              scope="row"
+            >
               Grand Total
             </TableCell>
-            <TableCell sx={{ fontWeight: 600, paddingRight: 4 }} align="right">
+            <TableCell
+              sx={{ fontWeight: "bold", paddingRight: 4, fontSize: 18 }}
+              align="right"
+            >
               {totalSum}
             </TableCell>
           </TableRow>

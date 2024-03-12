@@ -42,18 +42,18 @@ function Row(props) {
   return (
     <React.Fragment>
       {/* FIRST TABLE */}
-      <TableRow>
-        <TableCell component="th" scope="row">
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={handleToggle}
-          >
+      <TableRow onClick={handleToggle} style={{ cursor: "pointer" }}>
+        <TableCell className="row_parent" component="th" scope="row">
+          <IconButton aria-label="expand row" size="small" className="icons">
             {open ? "-" : "+"}
           </IconButton>
           {row.name}
         </TableCell>
-        <TableCell sx={{ paddingRight: 4 }} align="right">
+        <TableCell
+          className="row_parent"
+          sx={{ paddingRight: 4 }}
+          align="right"
+        >
           {row.parent.total_amount}
         </TableCell>
       </TableRow>
@@ -96,13 +96,18 @@ function Row(props) {
                     (centerKey, centerIndex) => (
                       <>
                         {/* Second Layer */}
-                        <TableRow key={centerIndex}>
+                        <TableRow
+                          key={centerIndex}
+                          onClick={() => handleChildToggle(centerIndex)}
+                          style={{ cursor: "pointer" }}
+                        >
                           <TableCell
                             sx={{
-                              paddingTop: 0,
+                              paddingTop: 2,
                               paddingBottom: 2,
                               paddingRight: 2,
                               paddingLeft: 2,
+                              fontWeight: 600,
                             }}
                             component="th"
                             scope="row"
@@ -111,7 +116,7 @@ function Row(props) {
                               aria-label="expand row"
                               size="small"
                               sx={{ fontWeight: "600" }}
-                              onClick={() => handleChildToggle(centerIndex)}
+                              className="icons"
                             >
                               {childOpen[centerIndex] ? "-" : "+"}
                             </IconButton>
@@ -121,7 +126,7 @@ function Row(props) {
                             align="right"
                             component="th"
                             scope="row"
-                            sx={{ paddingRight: 2 }}
+                            sx={{ paddingRight: 2, fontWeight: 600 }}
                           >
                             {row.parent.cost_centers[centerKey].total_amount}
                           </TableCell>
@@ -144,7 +149,19 @@ function Row(props) {
                                           .account_names
                                       ).map((accountKey, accountIndex) => (
                                         <>
-                                          <TableRow key={accountKey}>
+                                          <TableRow
+                                            key={accountKey}
+                                            style={{
+                                              border: "1px solid #d9e1f2",
+                                              cursor: "pointer",
+                                            }}
+                                            onClick={() =>
+                                              handleAccountCentersToggle(
+                                                centerIndex,
+                                                accountIndex
+                                              )
+                                            }
+                                          >
                                             <TableCell
                                               component="th"
                                               scope="row"
@@ -152,12 +169,7 @@ function Row(props) {
                                               <IconButton
                                                 aria-label="expand row"
                                                 size="small"
-                                                onClick={() =>
-                                                  handleAccountCentersToggle(
-                                                    centerIndex,
-                                                    accountIndex
-                                                  )
-                                                }
+                                                className="icons"
                                               >
                                                 {accountCentersOpen[
                                                   centerIndex
@@ -289,7 +301,6 @@ function Row(props) {
           </Collapse>
         </TableCell>
       </TableRow>
-      {/* Grand Total Row */}
     </React.Fragment>
   );
 }

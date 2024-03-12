@@ -4,3 +4,16 @@
 * {
   border-color: #d9e1f2 !important;
 }
+.icons {
+  font-weight: bold !important;
+  margin-right: 6px !important;
+  /* background: #d9e1f2 !important; */
+  min-height: unset !important;
+  border-radius: 5px !important;
+  color: black !important;
+}
+
+.row_parent {
+  font-size: 18px !important;
+  font-weight: bold !important;
+}
