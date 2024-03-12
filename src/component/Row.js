@@ -9,13 +9,14 @@ import Collapse from "@mui/material/Collapse";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
+import TableHead from "@mui/material/TableHead";
+import Typography from "@mui/material/Typography";
 
 function Row(props) {
   const { row } = props;
   const [open, setOpen] = React.useState(false);
   const [childOpen, setChildOpen] = React.useState([]);
   const [accountCentersOpen, setAccountCentersOpen] = React.useState([]);
-  const [accountNamesOpen, setAccountNamesOpen] = React.useState([]);
 
   const handleToggle = () => {
     setOpen(!open);
@@ -28,7 +29,6 @@ function Row(props) {
 
     // Reset accountCentersOpen and accountNamesOpen for the clicked child row
     setAccountCentersOpen([]);
-    setAccountNamesOpen([]);
   };
 
   const handleAccountCentersToggle = (childIndex, centerIndex) => {
@@ -37,25 +37,13 @@ function Row(props) {
     newAccountCentersOpen[childIndex][centerIndex] =
       !newAccountCentersOpen[childIndex][centerIndex];
     setAccountCentersOpen(newAccountCentersOpen);
-
-    // Reset accountNamesOpen for the clicked cost center row
-    setAccountNamesOpen([]);
-  };
-
-  const handleAccountNamesToggle = (childIndex, centerIndex, accountIndex) => {
-    const newAccountNamesOpen = [...accountNamesOpen];
-    newAccountNamesOpen[childIndex] = newAccountNamesOpen[childIndex] || [];
-    newAccountNamesOpen[childIndex][centerIndex] =
-      newAccountNamesOpen[childIndex][centerIndex] || [];
-    newAccountNamesOpen[childIndex][centerIndex][accountIndex] =
-      !newAccountNamesOpen[childIndex][centerIndex][accountIndex];
-    setAccountNamesOpen(newAccountNamesOpen);
   };
 
   return (
     <React.Fragment>
-      <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
-        <TableCell>
+      {/* FIRST TABLE */}
+      <TableRow>
+        <TableCell component="th" scope="row">
           <IconButton
             aria-label="expand row"
             size="small"
@@ -63,26 +51,66 @@ function Row(props) {
           >
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
-        </TableCell>
-        <TableCell component="th" scope="row">
           {row.name}
         </TableCell>
-        <TableCell align="right">{row.parent.total_amount}</TableCell>
+        <TableCell sx={{ paddingRight: 4 }} align="right">
+          {row.parent.total_amount}
+        </TableCell>
       </TableRow>
+      {/* SECOND TABLE */}
       <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Table size="small" aria-label="purchases">
+        <TableCell
+          style={{
+            paddingBottom: 12,
+            paddingTop: 12,
+          }}
+          colSpan={12}
+        >
+          <Collapse
+            in={open}
+            timeout="auto"
+            unmountOnExit
+            sx={{
+              background: "white",
+              borderTopLeftradius: 4,
+              borderTopRightradius: 4,
+            }}
+          >
+            <Typography
+              sx={{
+                padding: 2,
+                paddingBottom: 0,
+                fontWeight: "600",
+                fontSize: 14,
+              }}
+              variant="h6"
+              gutterBottom
+              component="div"
+            >
+              Cost Centers
+            </Typography>
+            <Box>
+              <Table aria-label="purchases">
                 <TableBody>
                   {Object.keys(row.parent.cost_centers).map(
                     (centerKey, centerIndex) => (
                       <>
-                        <TableRow key={centerKey}>
-                          <TableCell>
+                        {/* Second Layer */}
+                        <TableRow key={centerIndex}>
+                          <TableCell
+                            sx={{
+                              paddingTop: 0,
+                              paddingBottom: 2,
+                              paddingRight: 2,
+                              paddingLeft: 2,
+                            }}
+                            component="th"
+                            scope="row"
+                          >
                             <IconButton
                               aria-label="expand row"
                               size="small"
+                              sx={{ fontWeight: "600" }}
                               onClick={() => handleChildToggle(centerIndex)}
                             >
                               {childOpen[centerIndex] ? (
@@ -91,16 +119,20 @@ function Row(props) {
                                 <KeyboardArrowDownIcon />
                               )}
                             </IconButton>
-                          </TableCell>
-                          <TableCell component="th" scope="row">
                             {centerKey}
                           </TableCell>
-                          <TableCell component="th" scope="row">
+                          <TableCell
+                            align="right"
+                            component="th"
+                            scope="row"
+                            sx={{ paddingRight: 2 }}
+                          >
                             {row.parent.cost_centers[centerKey].total_amount}
                           </TableCell>
                         </TableRow>
+                        {/* Fourth Layer */}
                         <TableRow>
-                          <TableCell colSpan={3}>
+                          <TableCell colSpan={12}>
                             <Collapse
                               in={childOpen[centerIndex]}
                               timeout="auto"
@@ -117,7 +149,10 @@ function Row(props) {
                                       ).map((accountKey, accountIndex) => (
                                         <>
                                           <TableRow key={accountKey}>
-                                            <TableCell>
+                                            <TableCell
+                                              component="th"
+                                              scope="row"
+                                            >
                                               <IconButton
                                                 aria-label="expand row"
                                                 size="small"
@@ -139,14 +174,9 @@ function Row(props) {
                                                   <KeyboardArrowDownIcon />
                                                 )}
                                               </IconButton>
-                                            </TableCell>
-                                            <TableCell
-                                              component="th"
-                                              scope="row"
-                                            >
                                               {accountKey}
                                             </TableCell>
-                                            <TableCell
+                                            {/* <TableCell
                                               component="th"
                                               scope="row"
                                             >
@@ -156,10 +186,10 @@ function Row(props) {
                                                 ].account_names[accountKey][0]
                                                   .amount
                                               }
-                                            </TableCell>
+                                            </TableCell> */}
                                           </TableRow>
                                           <TableRow>
-                                            <TableCell colSpan={3}>
+                                            <TableCell colSpan={12}>
                                               <Collapse
                                                 in={
                                                   accountCentersOpen[
@@ -173,10 +203,41 @@ function Row(props) {
                                                 unmountOnExit
                                               >
                                                 <Box sx={{ margin: 1 }}>
+                                                  <Typography
+                                                    variant="h6"
+                                                    gutterBottom
+                                                    component="div"
+                                                    sx={{
+                                                      fontSize: 14,
+                                                      fontWeight: 600,
+                                                    }}
+                                                  >
+                                                    Details
+                                                  </Typography>
                                                   <Table
                                                     size="small"
                                                     aria-label="purchases"
                                                   >
+                                                    <TableHead>
+                                                      <TableRow>
+                                                        <TableCell
+                                                          sx={{
+                                                            fontWeight: 600,
+                                                          }}
+                                                        >
+                                                          Description
+                                                        </TableCell>
+
+                                                        <TableCell
+                                                          sx={{
+                                                            fontWeight: 600,
+                                                          }}
+                                                          align="right"
+                                                        >
+                                                          Price
+                                                        </TableCell>
+                                                      </TableRow>
+                                                    </TableHead>
                                                     <TableBody>
                                                       {row.parent.cost_centers[
                                                         centerKey
@@ -192,37 +253,6 @@ function Row(props) {
                                                               nestedAccountIndex
                                                             }
                                                           >
-                                                            <TableCell>
-                                                              <IconButton
-                                                                aria-label="expand row"
-                                                                size="small"
-                                                                onClick={() =>
-                                                                  handleAccountNamesToggle(
-                                                                    centerIndex,
-                                                                    accountIndex,
-                                                                    nestedAccountIndex
-                                                                  )
-                                                                }
-                                                              >
-                                                                {accountNamesOpen[
-                                                                  centerIndex
-                                                                ] &&
-                                                                accountNamesOpen[
-                                                                  centerIndex
-                                                                ][
-                                                                  accountIndex
-                                                                ] &&
-                                                                accountNamesOpen[
-                                                                  centerIndex
-                                                                ][accountIndex][
-                                                                  nestedAccountIndex
-                                                                ] ? (
-                                                                  <KeyboardArrowUpIcon />
-                                                                ) : (
-                                                                  <KeyboardArrowDownIcon />
-                                                                )}
-                                                              </IconButton>
-                                                            </TableCell>
                                                             <TableCell
                                                               component="th"
                                                               scope="row"
@@ -230,11 +260,12 @@ function Row(props) {
                                                               {account.description !==
                                                               null
                                                                 ? account.description
-                                                                : "-"}
+                                                                : "لا يوجد تفاصيل"}
                                                             </TableCell>
                                                             <TableCell
                                                               component="th"
                                                               scope="row"
+                                                              align="right"
                                                             >
                                                               {account.amount}
                                                             </TableCell>
@@ -264,6 +295,7 @@ function Row(props) {
           </Collapse>
         </TableCell>
       </TableRow>
+      {/* Grand Total Row */}
     </React.Fragment>
   );
 }

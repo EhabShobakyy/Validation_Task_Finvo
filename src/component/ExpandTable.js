@@ -20,7 +20,7 @@ import Row from "./Row";
 export default function CollapsibleTable() {
   const [apiData, setApiData] = useState([]);
   const [transformedArray, setTransformedArray] = useState([]);
-
+  const [totalSum, setTotalSum] = useState(0);
   // FETCH API DATA
   useEffect(() => {
     const fetchData = async () => {
@@ -61,16 +61,28 @@ export default function CollapsibleTable() {
 
     setTransformedArray(transformedArray);
   }, [apiData]);
+  // Calculate the sum
+  useEffect(() => {
+    // Calculate the sum and update the state
+    const sum = transformedArray.reduce(
+      (acc, el) => acc + el.parent.total_amount,
+      0
+    );
+    setTotalSum(sum);
+  }, [transformedArray]);
 
   return (
-    <TableContainer component={Paper}>
+    <TableContainer
+      component={Paper}
+      sx={{ background: "#8593910d", width: 1000, margin: "auto" }}
+    >
       <Table aria-label="collapsible table">
-        <TableHead>
+        <TableHead sx={{ background: "#d9e1f2" }}>
           <TableRow>
-            <TableCell />
-            <TableCell>Row Labels</TableCell>
-            <TableCell></TableCell>
-            <TableCell align="right">Grand Total</TableCell>
+            <TableCell sx={{ fontWeight: 600 }}>Row Labels</TableCell>
+            <TableCell sx={{ fontWeight: 600 }} align="right">
+              Grand Total
+            </TableCell>
           </TableRow>
         </TableHead>
 
@@ -78,6 +90,15 @@ export default function CollapsibleTable() {
           {transformedArray.map((row) => (
             <Row key={row.id} row={row} totalAmount={row.parent.total_amount} />
           ))}
+
+          <TableRow sx={{ background: "#d9e1f2" }}>
+            <TableCell sx={{ fontWeight: 600 }} component="th" scope="row">
+              Grand Total
+            </TableCell>
+            <TableCell sx={{ fontWeight: 600, paddingRight: 4 }} align="right">
+              {totalSum}
+            </TableCell>
+          </TableRow>
         </TableBody>
       </Table>
     </TableContainer>
