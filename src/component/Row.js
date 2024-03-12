@@ -49,7 +49,7 @@ function Row(props) {
             size="small"
             onClick={handleToggle}
           >
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            {open ? "-" : "+"}
           </IconButton>
           {row.name}
         </TableCell>
@@ -113,11 +113,7 @@ function Row(props) {
                               sx={{ fontWeight: "600" }}
                               onClick={() => handleChildToggle(centerIndex)}
                             >
-                              {childOpen[centerIndex] ? (
-                                <KeyboardArrowUpIcon />
-                              ) : (
-                                <KeyboardArrowDownIcon />
-                              )}
+                              {childOpen[centerIndex] ? "-" : "+"}
                             </IconButton>
                             {centerKey}
                           </TableCell>
@@ -168,11 +164,9 @@ function Row(props) {
                                                 ] &&
                                                 accountCentersOpen[centerIndex][
                                                   accountIndex
-                                                ] ? (
-                                                  <KeyboardArrowUpIcon />
-                                                ) : (
-                                                  <KeyboardArrowDownIcon />
-                                                )}
+                                                ]
+                                                  ? "-"
+                                                  : "+"}
                                               </IconButton>
                                               {accountKey}
                                             </TableCell>
